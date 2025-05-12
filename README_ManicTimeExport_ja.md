@@ -1,75 +1,102 @@
-# ManicTime アプリケーション使用状況エクスポート自動化ツール
+# ManicTime アプリケーション使用状況エクスポート＆AI日報自動化ツール
 
 ## 概要
-このツールは、ManicTimeのアプリケーション使用状況を本日分だけCSV形式で自動エクスポートするPythonスクリプトです。
+このツールは、ManicTimeのアプリケーション使用状況を自動でCSVエクスポートし、Google Gemini APIを使って日報を自動生成しMarkdown形式で保存する自動化スクリプトです。
 
 ---
 
-## 必要な環境
-- Windows 10 以降
-- Python 3.7 以降（64bit推奨）
-- ManicTime（CLIエクスポート機能が必要）
-- ManicTimeがインストールされていること
+## 技術仕様
+- **言語**: Python 3.7以降
+- **主要ライブラリ**: pandas, python-dotenv, google-generativeai
+- **対応OS**: Windows 10以降
+- **ManicTime**: CLIエクスポート機能必須（Pro/Server推奨）
+- **AI要約**: Google Gemini API
+- **出力**: Obsidian Vault内にMarkdown日報＋CSV
 
 ---
 
-## 使い方
-1. `export_today_applications.py` を任意のフォルダに配置します。
-2. ManicTimeが起動していることを確認してください。
-3. コマンドプロンプトまたはPowerShellを「管理者として実行」します。
-4. 以下のコマンドでスクリプトを実行します：
+## ユーザーが設定する項目（.envファイル）
+1. `.env.example` をコピーし `.env` を作成
+2. 以下の3項目を自分の環境に合わせて設定
+
+```
+API_KEY=your_gemini_api_key_here
+VAULT_PATH=C:/Users/username/Desktop
+MANICTIME_EXE=C:/Program Files/ManicTime/Mtc.exe
+```
+- `API_KEY`: Google Gemini APIキー
+- `VAULT_PATH`: ManicTimeから出力するcsvの保存先、及び日報の出力ファイル
+- `MANICTIME_EXE`: ManicTime CLI (Mtc.exe) のフルパス
+
+---
+
+## セットアップ手順
+1. 必要なPythonパッケージをインストール
    ```
-   python export_today_applications.py
+   pip install -r requirements.txt
    ```
-5. エクスポートされたCSVファイルは、デスクトップの `ManicTimeExports` フォルダに保存されます。
+2. `.env`ファイルを作成し、上記3項目を設定
+3. ManicTimeが起動していることを確認
+4. コマンドプロンプトまたはPowerShellを**管理者として実行**
+5. スクリプトを実行
+   ```
+   python export_and_report.py
+   ```
+6. Vault_Path内にManicTimeで記録したアプリケーション利用履歴と(CSV形式)日報(Markdown形式)が出力されます。
 
 ---
 
-## 管理者権限での実行方法
+## AIモデルの切り替えについて
 
-### ショートカットを使う場合
-1. デスクトップ上で右クリックし、「新規作成」→「ショートカット」を選択。
-2. 「項目の場所を入力してください」に以下を入力：
-   python "C:\Users\ibushi maru\Desktop\作業ファイル\ManicTimeTest\export_and_report.py"
-3. 「次へ」をクリックし、ショートカットの名前を入力（例：ManicTimeエクスポート実行）。
-4. 作成したショートカットを右クリックし、「プロパティ」を選択。
-5. 「ショートカット」タブの「詳細設定」ボタンをクリック。
-6. 「管理者として実行」にチェックを入れて「OK」。
-7. 「OK」でプロパティ画面を閉じる。
+本ツールはデフォルトで **Google Gemini APIの「gemini-2.0-flash」モデル** を利用しています。
 
-これで、作成したショートカットをダブルクリックすると、管理者権限でPythonスクリプトが実行されます。
+他のモデル（例: gemini-2.5-pro など）を利用したい場合は、
+`export_and_report.py` 内の下記該当箇所のモデル名を変更してください。
+
+```
+model = genai.GenerativeModel('gemini-2.0-flash')
+```
+
+例：
+```
+model = genai.GenerativeModel('gemini-2.5-pro-preview-05-06')
+```
+
+ご利用のGoogleアカウントやAPIプランによって利用可能なモデルが異なる場合があります。
+詳しくは[Google Gemini API公式ドキュメント](https://ai.google.dev/)をご参照ください。
 
 ---
 
-- スタートメニューで「cmd」または「PowerShell」と入力し、右クリック→「管理者として実行」を選択しても実行できます。
+## 定期実行（自動日報生成）の設定例
 
----
+### Windowsタスクスケジューラを使う場合
+1. 「タスクスケジューラ」を起動
+2. 「基本タスクの作成」→ 名前を入力（例：ManicTime日報自動生成）
+3. 「トリガー」で「毎日」や「毎週」などを選択（例：毎日9:00）
+4. 「操作」で「プログラムの開始」を選択し、
+   - プログラム/スクリプト：`python`
+   - 引数の追加：`C:\Users\username\export_and_report.py`
+   - 開始（作業）フォルダー：スクリプトのあるディレクトリ
+5. 「完了」で保存
 
-## よくあるトラブルと対策
-- **エクスポート時に「Access to the path is denied.」と表示される**
-  - 管理者権限で実行してください。
-  - ManicTimeのライセンスがCLIエクスポートに対応しているか確認してください。
-- **Pythonが見つからない/コマンドが通らない**
-  - Pythonのインストールとパス設定を確認してください。
-- **ManicTimeが起動していない/データが出力されない**
-  - ManicTime本体がバックグラウンドで動作しているか確認してください。
-- **エクスポート先フォルダが作成されない**
-  - スクリプトは自動で作成しますが、権限不足の場合は手動で作成してください。
+- Pythonやスクリプトのパスはご自身の環境に合わせて修正してください。
+- 管理者権限が必要な場合は「タスクのプロパティ」→「最上位の特権で実行する」にチェック
 
+### その他の自動化方法
+- バッチファイルやPowerShellスクリプトでラップし、ショートカットや他の自動化ツールから呼び出すことも可能です。 
 ---
 
 ## 注意事項
-- ManicTimeの無料版ではCLIエクスポート機能が制限されている場合があります。
-- スクリプト内の `mtc_path`（Mtc.exeのパス）は、ManicTimeのインストール場所によって異なります。
-- 標準インストールの場合：
-  - 64bit版: `C:\Program Files\ManicTime\Mtc.exe`
-  - 32bit版: `C:\Program Files (x86)\ManicTime\Mtc.exe`
-- カスタムインストールの場合は、インストール時に指定したパスを確認してください。
-- パスが異なる場合は、スクリプト先頭の `mtc_path` 変数をテキストエディタで修正してください。
-- パスが不明な場合は、エクスプローラーで `Mtc.exe` を検索し、右クリック→「ファイルの場所を開く」で確認できます。
-- エクスポート先やファイル名の仕様を変更したい場合は、スクリプト内の該当箇所を編集してください。
+- **APIキーやパスは絶対に公開しないでください**（.envは.gitignoreで除外済み）
+- ManicTimeの無料版ではCLIエクスポートが制限されている場合があります
+- エクスポート先やVaultパスは必ず書き込み権限のある場所を指定してください
+- 管理者権限での実行が必要な場合があります
+- Google Gemini APIの利用にはGoogleアカウントとAPIキーが必要です
 
 ---
 
-## サポート
-ご不明点があれば、ManicTime公式ドキュメント（https://docs.manictime.com/win-client/cli）もご参照ください。 
+## サポート・参考
+- ManicTime CLI: https://docs.manictime.com/win-client/cli
+- Google Gemini API: https://ai.google.dev/
+
+ご不明点は Twitter(現X) @ibushi_maru までご連絡ください。
