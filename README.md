@@ -100,3 +100,21 @@ model = genai.GenerativeModel('gemini-2.5-pro-preview-05-06')
 - Google Gemini API: https://ai.google.dev/
 
 ご不明点は Twitter(現X) @ibushi_maru までご連絡ください。
+
+---
+
+## 今後の拡張予定：`manictime_report.py` について
+
+本リポジトリでは、今後さらに柔軟なレポート生成やカスタマイズ性向上のため、
+`manictime_report.py` という新しいスクリプトの開発を予定しています。
+
+### 主な想定機能
+- ManicTimeのCSVやAPIからのデータ取得をより柔軟に
+- MermaidチャートやMarkdownレポートのカスタマイズ出力
+- コマンドライン引数や設定ファイルによる動作切り替え
+- 他AIサービス（例：OpenAI, Claude等）への対応
+- ユーザー独自テンプレートによる日報・週報・月報生成
+
+### 目的
+- より多様な業務・用途に対応できる日報/レポート自動化ツールを目指します。
+- コントリビューションや要望も歓迎します！
