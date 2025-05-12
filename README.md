@@ -32,7 +32,7 @@ API_KEY=your_gemini_api_key_here
 VAULT_PATH=C:/Users/username/Desktop
 MANICTIME_EXE=C:/Program Files/ManicTime/Mtc.exe
 ```
-- `API_KEY`: Google Gemini APIキー(https://aistudio.google.com/app/apikey)
+- `API_KEY`: Google Gemini APIキー([AI Studioの公式ページから入手](https://aistudio.google.com/app/apikey))
 - `VAULT_PATH`: ManicTimeから出力するcsvの保存先、及び日報の出力ファイル
 - `MANICTIME_EXE`: ManicTime CLI (Mtc.exe) のフルパス
 
