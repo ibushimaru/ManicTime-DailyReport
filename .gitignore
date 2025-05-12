@@ -14,4 +14,8 @@ Thumbs.db
 
 # VSCode/エディタ設定
 .vscode/
-.idea/ 
+.idea/
+*.code-workspace
+
+# ファイルの拡張子を追加
+*.code-workspace 
