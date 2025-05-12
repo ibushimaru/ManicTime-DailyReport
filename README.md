@@ -5,6 +5,14 @@
 
 ---
 
+## ManicTimeのダウンロード
+
+本ツールの利用にはManicTime（Windows版）が必要です。
+下記公式サイトからインストーラーをダウンロードし、インストールしてください。
+
+- [ManicTime公式ダウンロードページ](https://www.manictime.com/download)
+---
+
 ## 技術仕様
 - **言語**: Python 3.7以降
 - **主要ライブラリ**: pandas, python-dotenv, google-generativeai
@@ -118,3 +126,4 @@ model = genai.GenerativeModel('gemini-2.5-pro-preview-05-06')
 ### 目的
 - より多様な業務・用途に対応できる日報/レポート自動化ツールを目指します。
 - コントリビューションや要望も歓迎します！
+
