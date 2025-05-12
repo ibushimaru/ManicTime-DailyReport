@@ -1,75 +1,84 @@
-# ManicTime アプリケーション使用状況エクスポート自動化ツール
+# ManicTime アプリケーション使用状況エクスポート＆AI日報自動化ツール
 
 ## 概要
-このツールは、ManicTimeのアプリケーション使用状況を本日分だけCSV形式で自動エクスポートするPythonスクリプトです。
+このツールは、ManicTimeのアプリケーション使用状況を自動でCSVエクスポートし、Google Gemini APIを使って日報を自動生成、Obsidian VaultにMarkdown形式で保存する自動化スクリプトです。
 
 ---
 
-## 必要な環境
-- Windows 10 以降
-- Python 3.7 以降（64bit推奨）
-- ManicTime（CLIエクスポート機能が必要）
-- ManicTimeがインストールされていること
+## 技術仕様
+- **言語**: Python 3.7以降
+- **主要ライブラリ**: pandas, python-dotenv, google-generativeai
+- **対応OS**: Windows 10以降
+- **ManicTime**: CLIエクスポート機能必須（Pro/Server推奨）
+- **AI要約**: Google Gemini API
+- **出力**: Obsidian Vault内にMarkdown日報＋CSV
 
 ---
 
-## 使い方
-1. `export_today_applications.py` を任意のフォルダに配置します。
-2. ManicTimeが起動していることを確認してください。
-3. コマンドプロンプトまたはPowerShellを「管理者として実行」します。
-4. 以下のコマンドでスクリプトを実行します：
+## ユーザーが設定する項目（.envファイル）
+1. `.env.example` をコピーし `.env` を作成
+2. 以下の3項目を自分の環境に合わせて設定
+
+```
+API_KEY=your_gemini_api_key_here
+VAULT_PATH=C:/Users/yourname/Desktop/作業ファイル/Obsidian/Test
+MANICTIME_EXE=C:/Program Files/ManicTime/Mtc.exe
+```
+- `API_KEY`: Google Gemini APIキー
+- `VAULT_PATH`: Obsidian Vaultのパス
+- `MANICTIME_EXE`: ManicTime CLI (Mtc.exe) のフルパス
+
+---
+
+## セットアップ手順
+1. 必要なPythonパッケージをインストール
    ```
-   python export_today_applications.py
+   pip install -r requirements.txt
    ```
-5. エクスポートされたCSVファイルは、デスクトップの `ManicTimeExports` フォルダに保存されます。
-
----
-
-## 管理者権限での実行方法
-
-### ショートカットを使う場合
-1. デスクトップ上で右クリックし、「新規作成」→「ショートカット」を選択。
-2. 「項目の場所を入力してください」に以下を入力：
-   python "C:\Users\ibushi maru\Desktop\作業ファイル\ManicTimeTest\export_and_report.py"
-3. 「次へ」をクリックし、ショートカットの名前を入力（例：ManicTimeエクスポート実行）。
-4. 作成したショートカットを右クリックし、「プロパティ」を選択。
-5. 「ショートカット」タブの「詳細設定」ボタンをクリック。
-6. 「管理者として実行」にチェックを入れて「OK」。
-7. 「OK」でプロパティ画面を閉じる。
-
-これで、作成したショートカットをダブルクリックすると、管理者権限でPythonスクリプトが実行されます。
-
----
-
-- スタートメニューで「cmd」または「PowerShell」と入力し、右クリック→「管理者として実行」を選択しても実行できます。
-
----
-
-## よくあるトラブルと対策
-- **エクスポート時に「Access to the path is denied.」と表示される**
-  - 管理者権限で実行してください。
-  - ManicTimeのライセンスがCLIエクスポートに対応しているか確認してください。
-- **Pythonが見つからない/コマンドが通らない**
-  - Pythonのインストールとパス設定を確認してください。
-- **ManicTimeが起動していない/データが出力されない**
-  - ManicTime本体がバックグラウンドで動作しているか確認してください。
-- **エクスポート先フォルダが作成されない**
-  - スクリプトは自動で作成しますが、権限不足の場合は手動で作成してください。
+2. `.env`ファイルを作成し、上記3項目を設定
+3. ManicTimeが起動していることを確認
+4. コマンドプロンプトまたはPowerShellを**管理者として実行**
+5. スクリプトを実行
+   ```
+   python export_and_report.py
+   ```
+6. Obsidian Vault内に日報MarkdownとCSVが出力されます
 
 ---
 
 ## 注意事項
-- ManicTimeの無料版ではCLIエクスポート機能が制限されている場合があります。
-- スクリプト内の `mtc_path`（Mtc.exeのパス）は、ManicTimeのインストール場所によって異なります。
-- 標準インストールの場合：
-  - 64bit版: `C:\Program Files\ManicTime\Mtc.exe`
-  - 32bit版: `C:\Program Files (x86)\ManicTime\Mtc.exe`
-- カスタムインストールの場合は、インストール時に指定したパスを確認してください。
-- パスが異なる場合は、スクリプト先頭の `mtc_path` 変数をテキストエディタで修正してください。
-- パスが不明な場合は、エクスプローラーで `Mtc.exe` を検索し、右クリック→「ファイルの場所を開く」で確認できます。
-- エクスポート先やファイル名の仕様を変更したい場合は、スクリプト内の該当箇所を編集してください。
+- **APIキーやパスは絶対に公開しないでください**（.envは.gitignoreで除外済み）
+- ManicTimeの無料版ではCLIエクスポートが制限されている場合があります
+- エクスポート先やVaultパスは必ず書き込み権限のある場所を指定してください
+- 管理者権限での実行が必要な場合があります
+- Google Gemini APIの利用にはGoogleアカウントとAPIキーが必要です
 
 ---
 
-## サポート
-ご不明点があれば、ManicTime公式ドキュメント（https://docs.manictime.com/win-client/cli）もご参照ください。 
+## サポート・参考
+- ManicTime CLI: https://docs.manictime.com/win-client/cli
+- Google Gemini API: https://ai.google.dev/
+- Obsidian: https://obsidian.md/
+
+ご不明点はGitHub Issues等でご連絡ください。
+
+---
+
+## AIモデルの切り替えについて
+
+本ツールはデフォルトで **Google Gemini APIの「gemini-2.0-flash」モデル** を利用しています。
+
+他のモデル（例: gemini-2.5-pro など）を利用したい場合は、
+`export_and_report.py` 内の下記該当箇所のモデル名を変更してください。
+
+```
+model = genai.GenerativeModel('gemini-2.0-flash')
+```
+
+例：
+```
+model = genai.GenerativeModel('gemini-2.5-pro')
+```
+
+ご利用のGoogleアカウントやAPIプランによって利用可能なモデルが異なる場合があります。
+詳しくは[Google Gemini API公式ドキュメント](https://ai.google.dev/)をご参照ください。 
