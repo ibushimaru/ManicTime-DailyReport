@@ -1,0 +1,17 @@
+# 機密・個人設定ファイル
+.env
+
+# Pythonキャッシュ
+__pycache__/
+*.pyc
+
+# ログファイル
+*.log
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# VSCode/エディタ設定
+.vscode/
+.idea/ 
